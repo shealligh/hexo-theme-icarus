@@ -5,6 +5,9 @@
     .is-1-column .container, .is-2-column .container
         max-width: $desktop - 2 * $gap
         width: $desktop - 2 * $gap
+    .is-3-column .container
+        max-width: $widescreen - $gap
+        width: $widescreen - $gap
 
 +fullhd()
     .is-2-column .container
@@ -14,6 +17,10 @@
     .is-1-column .container
         max-width: $desktop - 2 * $gap
         width: $desktop - 2 * $gap
+
+    .is-3-column .container
+        max-width: $fullhd - 2 * $gap
+        width: $fullhd - 2 * $gap
 
 +tablet()
     .is-sticky

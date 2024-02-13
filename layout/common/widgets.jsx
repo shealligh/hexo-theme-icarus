@@ -5,13 +5,33 @@ const classname = require('hexo-component-inferno/lib/util/classname');
 
 const logger = createLogger.default();
 
-function formatWidgets(widgets) {
+function formatWidgets(widgets, page) {//新增page参数
+    // const result = {};
+    // if (Array.isArray(widgets)) {
+    //     widgets.filter(widget => typeof widget === 'object').forEach(widget => {
+    //         if ('position' in widget && (widget.position === 'left' || widget.position === 'right')) {
+    //             if (!(widget.position in result)) {
+    //                 result[widget.position] = [widget];
+    //             } else {
+    //                 result[widget.position].push(widget);
+    //             }
+    //         }
+    //     });
+    // }
+    // return result;
+    //以下新增
     const result = {};
     if (Array.isArray(widgets)) {
         widgets.filter(widget => typeof widget === 'object').forEach(widget => {
             if ('position' in widget && (widget.position === 'left' || widget.position === 'right')) {
                 if (!(widget.position in result)) {
-                    result[widget.position] = [widget];
+                    if (widget.position === 'right') {
+                        if (!['page', 'post'].includes(page.layout)) {
+                            result[widget.position] = [widget];
+                        }
+                    } else {
+                        result[widget.position] = [widget];
+                    }
                 } else {
                     result[widget.position].push(widget);
                 }
@@ -19,6 +39,7 @@ function formatWidgets(widgets) {
         });
     }
     return result;
+    //以上新增
 }
 
 function hasColumn(widgets, position, config, page) {
@@ -68,7 +89,7 @@ function isColumnSticky(config, position) {
 class Widgets extends Component {
     render() {
         const { site, config, helper, page, position } = this.props;
-        const widgets = formatWidgets(config.widgets)[position] || [];
+        const widgets = formatWidgets(config.widgets, page)[position] || [];//新增page参数
         const columnCount = getColumnCount(config.widgets, config, page);
 
         if (!widgets.length) {

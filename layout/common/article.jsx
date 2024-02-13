@@ -45,17 +45,22 @@ module.exports = class extends Component {
                     </span>}
                 </div> : null}
                 <article class={`card-content article${'direction' in page ? ' ' + page.direction : ''}`} role="article">
+                    {/* Title */}
+                    {page.title !== '' && index ? <p class="title is-3 is-size-4-mobile"><a class="link-muted" href={url_for(page.link || page.path)}>{page.title}</a></p> : null}
+                    {page.title !== '' && !index ? <h1 class="title has-text-centered is-size-3 is-size-4-mobile has-text-weight-normal">{page.title}</h1> : null}{/*修改这里*/}
                     {/* Metadata */}
                     {page.layout !== 'page' ? <div class="article-meta is-size-7 is-uppercase level is-mobile">
                         <div class="level-left">
                             {/* Creation Date */}
                             {page.date && <span class="level-item" dangerouslySetInnerHTML={{
-                                __html: _p('article.created_at', `<time dateTime="${date_xml(page.date)}" title="${new Date(page.date).toLocaleString()}">${date(page.date)}</time>`)
+                                __html: _p('article.created_at', `<i class="fa-regular fa-calendar-days">&nbsp;</i><time dateTime="${date_xml(page.date)}" title="${new Date(page.date).toLocaleString()}">${date(page.date)}</time>`)
                             }}></span>}
+                            <span class="level-item" >&#9474;</span>
                             {/* Last Update Date */}
                             {shouldShowUpdated && <span class="level-item" dangerouslySetInnerHTML={{
-                                __html: _p('article.updated_at', `<time dateTime="${date_xml(page.updated)}" title="${new Date(page.updated).toLocaleString()}">${date(page.updated)}</time>`)
+                                __html: _p('article.updated_at', `<i class="fa-regular fa-pen-to-square">&nbsp;</i>&nbsp;</i><time dateTime="${date_xml(page.updated)}" title="${new Date(page.updated).toLocaleString()}">${date(page.updated)}</time>`)
                             }}></span>}
+                            <span class="level-item" >&#9474;</span>
                             {/* author */}
                             {page.author ? <span class="level-item"> {page.author} </span> : null}
                             {/* Categories */}
@@ -73,35 +78,45 @@ module.exports = class extends Component {
                             </span> : null}
                             {/* Read time */}
                             {article && article.readtime && article.readtime === true ? <span class="level-item">
+                                <i class="fa-regular fa-clock">&nbsp;</i>
                                 {(() => {
                                     const words = getWordCount(page._content);
                                     const time = moment.duration((words / 150.0) * 60, 'seconds');
-                                    return `${_p('article.read_time', time.locale(index ? indexLanguage : language).humanize())} (${_p('article.word_count', words)})`;
+                                    return `${_p('article.read_time', time.locale(index ? indexLanguage : language).humanize())}`;
                                 })()}
                             </span> : null}
+                            <span class="level-item" >&#9474;</span>
+                            {/* Words */}
+                            {article && article.readtime && article.readtime === true ? <span class="level-item">
+                                <i class="fa-regular fa-file-word">&nbsp;</i>
+                                {(() => {
+                                    const words = getWordCount(page._content);
+                                    return `${_p('article.word_count', words)}`;
+                                })()}</span> : null}
                             {/* Visitor counter */}
                             {!index && plugins && plugins.busuanzi === true ? <span class="level-item" id="busuanzi_container_page_pv" dangerouslySetInnerHTML={{
                                 __html: _p('plugin.visit_count', '<span id="busuanzi_value_page_pv">0</span>')
                             }}></span> : null}
                         </div>
                     </div> : null}
-                    {/* Title */}
-                    {page.title !== '' && index ? <p class="title is-3 is-size-4-mobile"><a class="link-muted" href={url_for(page.link || page.path)}>{page.title}</a></p> : null}
-                    {page.title !== '' && !index ? <h1 class="title is-3 is-size-4-mobile">{page.title}</h1> : null}
                     {/* Content/Excerpt */}
                     <div class="content" dangerouslySetInnerHTML={{ __html: index && page.excerpt ? page.excerpt : page.content }}></div>
                     {/* Licensing block */}
                     {!index && article && article.licenses && Object.keys(article.licenses)
                         ? <ArticleLicensing.Cacheable page={page} config={config} helper={helper} /> : null}
-                    {/* Tags */}
-                    {!index && page.tags && page.tags.length ? <div class="article-tags is-size-7 mb-4">
-                        <span class="mr-2">#</span>
-                        {page.tags.map(tag => {
-                            return <a class="link-muted mr-2" rel="tag" href={url_for(tag.path)}>{tag.name}</a>;
-                        })}
-                    </div> : null}
-                    {/* "Read more" button */}
-                    {index && page.excerpt ? <a class="article-more button is-small is-size-7" href={`${url_for(page.link || page.path)}#more`}>{__('article.more')}</a> : null}
+                    {/* 添加以下将继续阅读按钮放在文章右下 */}
+                    <hr style="height:1px;margin:1rem 0" />
+                    <div className="level is-mobile is-flex">
+                        {/* Tags */}
+                        {page.tags && page.tags.length ? <div class="article-tags is-size-7 is-uppercase">
+                            <i class="fas fa-tags has-text-grey"></i>&nbsp;
+                            {page.tags.map((tag, index) => {
+                                return <a class="link-muted" rel="tag" href={url_for(tag.path)}>{tag.name}{index !== page.tags.length - 1 ? ', ' : ''}</a>;
+                            })}</div> : null}
+                        {/* "Read more" button */}
+                        {index && page.excerpt ? <a class="article-more button is-small is-size-7" href={`${url_for(page.link || page.path)}#more`}><i class="fas fa-book-reader has-text-info"></i>&nbsp;&nbsp;{__('article.more')}</a> : null}
+                    </div>
+                    {/* 添加以上将继续阅读按钮放在文章右下 */}
                     {/* Share button */}
                     {!index ? <Share config={config} page={page} helper={helper} /> : null}
                 </article>
